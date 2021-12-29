@@ -1,7 +1,6 @@
 package giostorage
 
 import (
-	"encoding/gob"
 	"errors"
 	"golang.org/x/crypto/chacha20"
 	"io"
@@ -53,23 +52,23 @@ func (s *Storage) Create(name string) (io.WriteCloser, error) {
 }
 
 // ReadInterface will read the given resp interface, from the file.
-// It uses gob.
+// It uses gob or json.
 func (s *Storage) ReadInterface(name string, resp interface{}) error {
 	f, err := s.Open(name)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	return gob.NewDecoder(f).Decode(resp)
+	return Decoder(f).Decode(resp)
 }
 
 // WriteInterface will write given data interface into a file.
-// It uses gob.
+// It uses gob or json.
 func (s *Storage) WriteInterface(name string, data interface{}) error {
 	f, err := s.Create(name)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	return gob.NewEncoder(f).Encode(data)
+	return Encoder(f).Encode(data)
 }
